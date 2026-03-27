@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}MediTrack{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="{{ url_for('dashboard.dashboard') }}" class="nav-brand">
+      <span class="nav-icon"></span> MediTrack
+    </a>
+
+    <div class="nav-links">
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('medicines.add_medicine') }}" class="btn btn-outline btn-sm">+ Add Medicine</a>
+        <div class="nav-profile">
+          <div class="nav-avatar" id="avatarBtn" title="{{ current_user.name }}">
+            {{ current_user.name[0].upper() }}
+          </div>
+          <div class="profile-dropdown" id="profileDropdown">
+            <div class="dropdown-header">
+              <strong>{{ current_user.name }}</strong>
+              <span>{{ current_user.email }}</span>
+            </div>
+            <a href="{{ url_for('auth.edit_profile') }}" class="dropdown-item"> Edit Profile</a>
+            <a href="{{ url_for('auth.logout') }}" class="dropdown-item dropdown-logout"> Logout</a>
+          </div>
+        </div>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn btn-ghost btn-sm">Login</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Register</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

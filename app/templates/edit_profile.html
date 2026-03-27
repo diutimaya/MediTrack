@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile — MediTrack{% endblock %}
+{% block content %}
+<div class="auth-card">
+  <h1 class="auth-title">Edit Profile</h1>
+  <p class="auth-sub">Update your name or email address</p>
+
+  <form method="POST" action="{{ url_for('auth.edit_profile') }}" class="form">
+    <div class="form-group">
+      <label for="name">Full name</label>
+      <input type="text" id="name" name="name" required value="{{ current_user.name }}"/>
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required value="{{ current_user.email }}"/>
+    </div>
+    <div class="form-actions">
+      <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-ghost">Cancel</a>
+      <button type="submit" class="btn btn-primary">Save changes</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

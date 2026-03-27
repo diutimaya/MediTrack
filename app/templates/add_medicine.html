@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Add Medicine — MediTrack{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Add a medicine</h1>
+  <p>Fill in the details below. You can add a reminder schedule and set your stock level.</p>
+</div>
+
+<div class="form-card">
+  <form method="POST" action="{{ url_for('medicines.add_medicine') }}" class="form">
+
+    <fieldset>
+      <legend>Medicine details</legend>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Medicine name <span class="req">*</span></label>
+          <input type="text" id="name" name="name" required placeholder="e.g. Metformin"/>
+        </div>
+        <div class="form-group">
+          <label for="dosage">Dosage <span class="req">*</span></label>
+          <input type="text" id="dosage" name="dosage" required placeholder="e.g. 500mg twice daily"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="stock_count">Initial stock (doses)</label>
+          <input type="number" id="stock_count" name="stock_count" min="0" value="30"/>
+        </div>
+        <div class="form-group">
+          <label for="low_stock_threshold">Low stock alert at</label>
+          <input type="number" id="low_stock_threshold" name="low_stock_threshold" min="1" value="5"/>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Reminder schedule 
+
+      </legend>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="reminder_time">Reminder time</label>
+          <input type="time" id="reminder_time" name="reminder_time"/>
+        </div>
+        <div class="form-group">
+          <label for="frequency">Frequency</label>
+          <select id="frequency" name="frequency">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="form-actions">
+      <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-ghost">Cancel</a>
+      <button type="submit" class="btn btn-primary">Save medicine</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Stock Summary — MediTrack{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Stock Summary</h1>
+    <p>{{ total }} medicine{% if total != 1 %}s{% endif %} tracked</p>
+  </div>
+  <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+</div>
+
+{% if critical %}
+<div class="summary-section">
+  <h2 class="section-title text-danger"> Out of stock ({{ critical|length }})</h2>
+  <div class="summary-table">
+    {% for m in critical %}
+    <div class="summary-row">
+      <span class="summary-name">{{ m.name }}</span>
+      <span class="summary-dosage">{{ m.dosage }}</span>
+      <span class="badge badge-empty">0 doses</span>
+      <span class="days-pill days-empty">0 days</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% if low %}
+<div class="summary-section">
+  <h2 class="section-title text-warning"> Low stock ({{ low|length }})</h2>
+  <div class="summary-table">
+    {% for m in low %}
+    <div class="summary-row">
+      <span class="summary-name">{{ m.name }}</span>
+      <span class="summary-dosage">{{ m.dosage }}</span>
+      <span class="badge badge-low">{{ m.stock_count }} doses</span>
+      <span class="days-pill days-low">{{ m.days_remaining }} days</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% if refill %}
+<div class="summary-section">
+  <h2 class="section-title text-warning"> Refill soon — under 7 days ({{ refill|length }})</h2>
+  <div class="summary-table">
+    {% for m in refill %}
+    <div class="summary-row">
+      <span class="summary-name">{{ m.name }}</span>
+      <span class="summary-dosage">{{ m.dosage }}</span>
+      <span class="badge badge-low">{{ m.stock_count }} doses</span>
+      <span class="days-pill days-low">{{ m.days_remaining }} days</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% if ok %}
+<div class="summary-section">
+  <h2 class="section-title" style="color:var(--green)"> Well stocked ({{ ok|length }})</h2>
+  <div class="summary-table">
+    {% for m in ok %}
+    <div class="summary-row">
+      <span class="summary-name">{{ m.name }}</span>
+      <span class="summary-dosage">{{ m.dosage }}</span>
+      <span class="badge badge-ok">{{ m.stock_count }} doses</span>
+      <span class="days-pill days-ok">{{ m.days_remaining }} days</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% if not total %}
+<div class="empty-state">
+  <p class="empty-icon"></p>
+  <h2>No medicines yet</h2>
+  <a href="{{ url_for('medicines.add_medicine') }}" class="btn btn-primary">Add your first medicine</a>
+</div>
+{% endif %}
+
+{% endblock %}

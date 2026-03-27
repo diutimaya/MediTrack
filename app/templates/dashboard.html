@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Dashboard —  MediTrack{% endblock %}
+{% block content %}
+{% set today = namespace(val=none) %}
+
+<div class="page-header">
+  <div>
+    <h1>Your medicines</h1>
+    <p>{{ stats.total }} medicine{% if stats.total != 1 %}s{% endif %} tracked
+      {% if stats.low %} · <span class="text-warning">{{ stats.low }} low</span>{% endif %}
+      {% if stats.empty %} · <span class="text-danger">{{ stats.empty }} empty</span>{% endif %}
+    </p>
+  </div>
+  <div style="display:flex;gap:10px;">
+    <a href="{{ url_for('stock.stock_summary') }}" class="btn btn-outline"> Stock Summary</a>
+    <a href="{{ url_for('medicines.add_medicine') }}" class="btn btn-primary">+ Add medicine</a>
+  </div>
+</div>
+
+{% if medicines %}
+  <div class="medicine-grid">
+    {% for m in medicines %}
+    <div class="medicine-card" id="card-{{ m.id }}">
+
+      <div class="card-header">
+        <div>
+          <h2 class="medicine-name">{{ m.name }}</h2>
+          <p class="medicine-dosage">{{ m.dosage }}</p>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+          <span class="badge badge-{{ m.stock_status }}">
+            {% if m.stock_status == 'ok' %}In stock
+            {% elif m.stock_status == 'low' %}Low stock
+            {% else %}Out of stock{% endif %}
+          </span>
+          {% if m.needs_refill %}
+            <span class="badge badge-low">Refill in {{ m.days_remaining }}d</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="stock-bar-wrap">
+        <div class="stock-bar {{ m.stock_status }}"
+             style="width: {{ [m.stock_count * 100 // (m.stock_count + m.low_stock_threshold + 1), 100] | min }}%">
+        </div>
+      </div>
+
+      <p class="stock-count" id="stock-{{ m.id }}">
+        <strong>{{ m.stock_count }}</strong> dose{% if m.stock_count != 1 %}s{% endif %} remaining
+        · <span id="days-{{ m.id }}"><strong>{{ m.days_remaining }}</strong> days supply</span>
+      </p>
+
+      {% if m.reminders %}
+        <div class="reminder-info">
+          {% for r in m.reminders %}
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span> {{ r.time }} ({{ r.frequency }})</span>
+              <span class="countdown" data-seconds="{{ r.next_dose_seconds }}">calculating...</span>
+              {% if r.missed_today and r.last_taken != today %}
+                <span class="badge badge-empty">Missed</span>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="card-actions">
+        <button class="btn btn-primary btn-sm take-btn"
+                data-id="{{ m.id }}"
+                {% if m.stock_count == 0 %}disabled{% endif %}>
+          Take dose
+        </button>
+
+        <form class="refill-form" data-id="{{ m.id }}">
+          <input type="number" name="amount" min="1" value="10" class="refill-input" aria-label="Refill amount"/>
+          <button type="submit" class="btn btn-outline btn-sm">Refill</button>
+        </form>
+
+        <form method="POST" action="{{ url_for('medicines.delete_medicine', medicine_id=m.id) }}"
+              class="delete-form" onsubmit="return confirm('Delete {{ m.name }}?')">
+          <input type="hidden" name="_method" value="DELETE"/>
+          <button type="submit" class="btn btn-danger-ghost btn-sm">Delete</button>
+        </form>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+{% else %}
+  <div class="empty-state">
+    <p class="empty-icon"></p>
+    <h2>No medicines yet</h2>
+    <p>Add your first medicine to start tracking doses and reminders.</p>
+    <a href="{{ url_for('medicines.add_medicine') }}" class="btn btn-primary">Add your first medicine</a>
+  </div>
+
+  
+{% endif %}
+
+{% endblock %}
