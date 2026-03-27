@@ -1,5 +1,5 @@
 from app import db
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 
 class Reminder(db.Model):
@@ -16,16 +16,19 @@ class Reminder(db.Model):
 
     @property
     def next_dose_seconds(self):
-        """Seconds until this reminder fires next (today or tomorrow)."""
-        from datetime import date, timedelta
-        now = datetime.now()
+        """Seconds until this reminder fires next (today or tomorrow) in IST."""
+        IST = timezone(timedelta(hours=5, minutes=30))
+        now = datetime.now(IST).replace(tzinfo=None)  # current IST time naive
+
         hh, mm = map(int, self.time.split(":"))
         today_fire = now.replace(hour=hh, minute=mm, second=0, microsecond=0)
+
         if today_fire > now:
             delta = today_fire - now
         else:
             tomorrow_fire = today_fire + timedelta(days=1)
             delta = tomorrow_fire - now
+
         return int(delta.total_seconds())
 
     def __repr__(self):
