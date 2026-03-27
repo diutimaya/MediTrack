@@ -34,9 +34,7 @@
     </fieldset>
 
     <fieldset>
-      <legend>Reminder schedule 
-
-      </legend>
+      <legend>Reminder schedule (optional)</legend>
       <div class="form-row">
         <div class="form-group">
           <label for="reminder_time">Reminder time</label>
@@ -56,5 +54,7 @@
       <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-ghost">Cancel</a>
       <button type="submit" class="btn btn-primary">Save medicine</button>
     </div>
+
   </form>
 </div>
+{% endblock %}
